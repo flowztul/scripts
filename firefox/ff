@@ -1,0 +1,48 @@
+#!/bin/sh
+
+error() {
+    echo "$@"
+    exit 1
+}
+
+open() {
+    URLS="$@"
+    if "${MXC}" -a "${APPNAME}" -p "${PROFILE}" 'ping()' ; then
+        for url in ${URLS} ; do
+            "${MXC}" -a "${APPNAME}" -p "${PROFILE}" "openURL(${url})"
+        done
+    else
+        "${APPNAME}" -new-instance -P "${PROFILE}" "$@"
+    fi
+}
+
+
+DEFAULT_PROFILE="default"
+
+if which iceweasel ; then
+    APPNAME="iceweasel"
+else
+    APPNAME="firefox"
+fi
+
+MXC="$(which mozilla-xremote-client)"
+
+if [ -z "${MXC}" ] ; then
+    MXC="$(ls -1d /usr/lib/xulrunner-[0-9]* | tail -n1)/mozilla-xremote-client"
+fi
+
+if [ -z "${MXC}" -o ! -x "${MXC}" ] ; then
+    error mozilla-xremote-client not found. exiting.
+fi
+
+case "$1" in
+    http://*|https://*|file://*)
+        PROFILE="${DEFAULT_PROFILE}"
+        ;;
+    *)
+        PROFILE="$1"
+        shift
+        ;;
+esac
+
+open "$@"
