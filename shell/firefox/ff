@@ -16,19 +16,38 @@ open() {
     fi
 }
 
+checkpath() {
+    local testpath testfile
+    testpath="${1}"
+
+    testfile="$(echo ${testpath} | tail -n1)"
+    if [ -x "${testfile}" ]
+    then
+        echo "${testfile}"
+    else
+        echo ""
+    fi
+}
+
 
 DEFAULT_PROFILE="default"
 
-if which iceweasel ; then
+if command -v iceweasel ; then
     APPNAME="iceweasel"
 else
     APPNAME="firefox"
 fi
 
-MXC="$(which mozilla-xremote-client)"
+MXC="$(command -v mozilla-xremote-client)"
 
+# Debian
 if [ -z "${MXC}" ] ; then
-    MXC="$(ls -1d /usr/lib/xulrunner-[0-9]* | tail -n1)/mozilla-xremote-client"
+    MXC=$(checkpath "/usr/lib/xulrunner-[0-9]*/mozilla-xremote-client")
+fi
+
+# Fedora
+if [ -z "${MXC}" ] ; then
+    MXC=$(checkpath "/usr/lib*/firefox/mozilla-xremote-client")
 fi
 
 if [ -z "${MXC}" -o ! -x "${MXC}" ] ; then
@@ -36,7 +55,7 @@ if [ -z "${MXC}" -o ! -x "${MXC}" ] ; then
 fi
 
 case "$1" in
-    http://*|https://*|file://*)
+    *://*)
         PROFILE="${DEFAULT_PROFILE}"
         ;;
     *)
