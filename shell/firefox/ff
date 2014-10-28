@@ -32,13 +32,13 @@ checkpath() {
 
 DEFAULT_PROFILE="default"
 
-if which iceweasel ; then
+if command -v iceweasel ; then
     APPNAME="iceweasel"
 else
     APPNAME="firefox"
 fi
 
-MXC="$(which mozilla-xremote-client)"
+MXC="$(command -v mozilla-xremote-client)"
 
 # Debian
 if [ -z "${MXC}" ] ; then
