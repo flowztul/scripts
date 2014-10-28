@@ -55,7 +55,7 @@ if [ -z "${MXC}" -o ! -x "${MXC}" ] ; then
 fi
 
 case "$1" in
-    http://*|https://*|file://*)
+    *://*)
         PROFILE="${DEFAULT_PROFILE}"
         ;;
     *)
